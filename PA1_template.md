@@ -59,7 +59,8 @@ Show any code that is needed to
 2. Process/transform the data (if necessary) into a format suitable for your analysis
 
 
-```{r loading_data}
+
+```r
 fname <- "activity.csv"
 unzip("activity.zip", fname)
 
@@ -73,7 +74,8 @@ df <- read.csv(fname, colClasses=c(NA, "Date", NA))
 
 2. Calculate and report the **mean** and **median** total number of steps taken per day
 
-```{r mean_total_steps}
+
+```r
 mean_daily_steps <- function(df) {
   daily_steps <- aggregate(df$steps, list(df$date), sum, na.rm=T)
   names(daily_steps) <- c(names(df)[2], names(df)[1])
@@ -85,9 +87,11 @@ mean_daily_steps <- function(df) {
 mm <- mean_daily_steps(df)
 ```
 
-Mean of total number of steps taken per day: `r mm[1]`
+![plot of chunk mean_total_steps](figure/mean_total_steps-1.png) 
 
-Median of total number of steps taken per day: `r mm[2]`
+Mean of total number of steps taken per day: 9354.2295082
+
+Median of total number of steps taken per day: 1.0395 &times; 10<sup>4</sup>
 
 ## What is the average daily activity pattern?
 
@@ -95,7 +99,8 @@ Median of total number of steps taken per day: `r mm[2]`
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r average_daily_activity}
+
+```r
 avg_steps_by_interval <- aggregate(df$steps, list(df$interval), mean, na.rm=T)
 names(avg_steps_by_interval) <- c(names(df)[3], names(df)[1])
 plot(steps ~ interval, avg_steps_by_interval, type="l")
@@ -105,8 +110,9 @@ max_interval <- subset(
   steps == max(avg_steps_by_interval$steps))$interval
 abline(v = max_interval, col = "red")
 mtext(max_interval, at = max_interval, col = "red")
-
 ```
+
+![plot of chunk average_daily_activity](figure/average_daily_activity-1.png) 
 
 
 ## Imputing missing values
@@ -123,7 +129,8 @@ bias into some calculations or summaries of the data.
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the **mean** and **median** total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r missing_values}
+
+```r
 missing_values <- sum(is.na(df$steps))
 
 df2 <- df
@@ -135,13 +142,15 @@ df2 <- df2[,c(2,3,1)]
 mm <- mean_daily_steps(df2)
 ```
 
+![plot of chunk missing_values](figure/missing_values-1.png) 
+
 Strategy: NAs replaced by the average steps per interval.
 
-Number of missing values imputed: `r missing_values`
+Number of missing values imputed: 2304
 
-Mean of total number of steps taken per day: `r mm[1]`
+Mean of total number of steps taken per day: 1.0766189 &times; 10<sup>4</sup>
 
-Median of total number of steps taken per day: `r mm[2]`
+Median of total number of steps taken per day: 1.0766189 &times; 10<sup>4</sup>
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -150,7 +159,8 @@ Median of total number of steps taken per day: `r mm[2]`
 
 2. Make a panel plot containing a time series plot (i.e. `type = "l"`) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was created using **simulated data**:
 
-```{r weekdays}
+
+```r
 df2$week_factor <- factor(
   weekdays(df2$date) == "Sunday" | weekdays(df2$date) == "Saturday")
 levels(df2$week_factor) <- c("weekday", "weekend")
@@ -159,7 +169,12 @@ avg_steps_wd <- aggregate(steps ~ interval, data=df2[df2$week_factor=="weekday",
 plot(steps ~ interval, avg_steps_wd, type="l")
 ```
 
-```{r weekends}
+![plot of chunk weekdays](figure/weekdays-1.png) 
+
+
+```r
 avg_steps_we <- aggregate(steps ~ interval, data=df2[df2$week_factor=="weekend",], mean, na.rm=T)
 plot(steps ~ interval, avg_steps_we, type="l")
 ```
+
+![plot of chunk weekends](figure/weekends-1.png) 
